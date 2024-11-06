@@ -1,0 +1,65 @@
+const crypto = require('crypto');
+
+// Bob's private and public key
+const bobPrivateKey = crypto.createPrivateKey(`-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDUR8l2tf7z6XEc
+kZxHLF5gY35x8hftShq++OF+gILVCpHDvE2PS848aW+Yscn2MO0XZnC9MyuBgwy4
+iX7RoVD1q5c60iq6V/2zaLFqR/gZl1rAv5TInM+0LgwqszpziBA3exs0PNCjovbH
+/+/nvo4Yak+MUZW9szD+H8MYPKoBp4uh32plLrscGzce2u6h5WoxQ1oiGxDlnnyH
+bQnL4Dr7gAHmnF+QKbl600Okx5HCaP//5pZiphEvB5eexFyu1TxsrRoWs5rxG1hn
+3PReHZhFMCfk0uhdDSaF07bfAVuFzC4KcegYVLs5vE6tsieF2m8xgWg0T/V+Ov8R
+rumbkQftAgMBAAECggEAVts0jFT1B1nJxTWy6tA1oVy0PO0gax+6B8+PfBIa9g5I
+C/19Apeyv7coSSLdjtT//WYV1OQd9fTn/I2NjTpjBNH7o76gavRbws+gX+sokVgD
+cwAwYVEADyoUIliJHwJaGElPnTUQ7RNdxAFtaLXoMAc3myM6kI7ECgZ27fDMYrYq
+zB/sTN27vIm9afwPv10R4G9Z0RoEd4yqnSrDF9Ha8RYoTffKtvg7lxYaaEYwTFyU
+yEzfazNOR2yKXB7fHQbQNZvfSRI71NbaxgbYqj0EI473563IOiyE7QNwz+koFTqH
+x92XrZ9Y2kWzRv/D4ohQWd52Ow/NjxuIX5AFXnChBQKBgQD5xhe9WMI9RpXdv8z9
+Xz+Cl8fZh5D1vCnQbGBtPf8WAK2pdzPdhaEujbLhtaiSERJUgwMxmlvkdaRzgnkz
+PcO2vrXWR5s2jb7XKYjbA/yy7QD9LYeVq8YSWc3PTPc5Gv8I6mFIDj9ATBhkYwK+
+HSQpJgCa283b+y14Uy/LwWIHJwKBgQDZkm8RMo3EKdgVPNzMLRfJjPba+tS/cvS+
+CUxJbvKxpO/VAu0Kf0hpLMnCRKfUOHAVE+At1txmYWUvp+yd4tlbBR5jmcVaqy+G
+CYJY3eNkJA6i24SkurjRznDeoZd+0WLtGaysa27wikVbhVJjTkPks/qem9KyuxyA
+NpBoHPlEywKBgQDKbHFm4d0hfegNO9ks6pl1A/9SWxzvGlyk7oBDaIAn28riUZn2
+CMt1CB+V7vw7zJwXY8od1CRvBayOdIo3LfJEU1DY5VV0I/IrPB0Oqq+Mbqljhheh
+BAJVcvRp8c1WOXvBRPosRGece081ZEyfuMxKkOLingq7IlhacMiGkCYa9wKBgFqr
+AmwJRDjeMzVOgrj3hbUxcGH7K5OI5WMYXtkvSiYrlOKQ8JVyS4vA5Wd20vXGezbd
+bIvNwVVM+yzr7tgxA+FBddON7keFlS1nYxGDjlJaEFtf3ZwEUCbmv/SXJJntyisC
+iwnjT30gMh0cpyPJJtP1CNj2GMzw2sS3eGBayqoXAoGAIvD1F3MJd1u4bNIha4bN
+1j8V3xH4LCl6Art/7Iql1Lj35vhGs9bDMlK+od94tU7AXO5Pk+aR4eX94+WSwHfO
+UoDYu7/wjY/BJo9Z+t4sMCjWT4JcT1DB3smdRh7d1Y94B64RmiVUtpnOEMJYn2f5
+3fWrMxZkTtIbdljdTKY2zwc=
+-----END PRIVATE KEY-----`);
+
+const bobPublicKey = crypto.createPublicKey(`-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1EfJdrX+8+lxHJGcRyxe
+YGN+cfIX7UoavvjhfoCC1QqRw7xNj0vOPGlvmLHJ9jDtF2ZwvTMrgYMMuIl+0aFQ
+9auXOtIqulf9s2ixakf4GZdawL+UyJzPtC4MKrM6c4gQN3sbNDzQo6L2x//v576O
+GGpPjFGVvbMw/h/DGDyqAaeLod9qZS67HBs3HtruoeVqMUNaIhsQ5Z58h20Jy+A6
++4AB5pxfkCm5etNDpMeRwmj//+aWYqYRLweXnsRcrtU8bK0aFrOa8RtYZ9z0Xh2Y
+RTAn5NLoXQ0mhdO23wFbhcwuCnHoGFS7ObxOrbInhdpvMYFoNE/1fjr/Ea7pm5EH
+7QIDAQAB
+-----END PUBLIC KEY-----`);
+
+// Alice's public key for verification
+const alicePublicKey = crypto.createPublicKey(`-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzWB10QRCrcAR/OrkZSuB
+8XNIlhzvCXKqFbIa2h2eTGh6GSIR00V80e5XB+3q3WiW9SWXnFATiIpb9gmogY1e
+Lkq9YUF7XqJWMyf5U4uVTRw9C3Snq1ASHUB7oLgt78X36jvIDItC/DtWvfBz/0oO
+mVTleBqa4JW5yyYXQjDpPTaypVlCYbQHt2+AFalP1ULqVUa1gokJFQnzp0pjNuFE
+Oorzp99G0jOqUrXW2UVN+shaY3tdRWl27nnMJlrCiq3J2L+EbyQ9uAbqyDodRe4H
+Fdbk/Q/pUQq3r3kCX5iREF5UzBhvW8sGDNzRyHZflPePnj+0OodOSBOlxfIPO/t4
+fwIDAQAB
+-----END PUBLIC KEY-----`);
+
+
+const ciphertextHex = "002bd7896b04deed6cc81c87c933f84c7e3a9f6262bb6e0df61260bed80dee73a90185ec41b4d0f15e9b22697e909f86c1cd84157f4ede09e8b255788ae9efec71b44aa0d08e5e79756a2a157c81a131f5580dbddbf6250fa78eb1cd8888ef4b21540ae93c6d659c311017a9170f462ebb383dd9173144ea95fa135e39ae4e6fc24c84b2fc4f9e7119f563c68b7ba6c6f8677faa61458757c12128abf7b9e634cd5f78b77144983e29992176ae6ae13b1bad4c62f49880ad2dc9f00c1684e54bfbee652b430e47fb2bd7c81631c4ec8fae650d56343449b9e23ed8cc2473e80d8bef93a02439515843ad7aa7969451ec947d6c0d00b7f56b0c30565015a82111";
+const ciphertext = Buffer.from(ciphertextHex, "hex");
+
+const recoveredPlaintext = crypto.privateDecrypt(bobPrivateKey, ciphertext);
+console. log("Recovered Plaintext:", recoveredPlaintext.toString ("utf8"));
+
+const signatureHex = "10f7fc7344c25e474fafeb1e61e123e9bc0fd82ff612bc1dc019042d59ab44ea2ca4d08e3462ab8f066eb898f4045fc86419c09ec5ae43ab828b24854e463faed81460a84e3c9ae958470cd8bb7d83ecb55fd285a32b6d2a03dd0c17283d6595e2d0c316ecbb7445c994d598a36501cd0d692e81eea1e75c3535b7f2e3b2caf3dce09c957fd2d2957d1ba7b469fb1664fc25f2bcd31d2d08a0ed616898798fbdd4e053ef5ea97a52a0c9b3bf634a43c80e85254bbee880f006b98160e9180c3cb7400fe61473d5bb4a285cc81173b4ab9b873d9f1816bc84e2bbc04f0f5288861346ad2ef0b62f02feb1367ec05699bbbabede0c968533799965c57e56deb219";
+const signature = Buffer.from(signatureHex, "hex");
+
+const isValid = crypto.verify("sha256", recoveredPlaintext, alicePublicKey, signature);
+console. log ("RSA signature verified:", isValid);
