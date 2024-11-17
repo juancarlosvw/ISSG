@@ -1,6 +1,6 @@
 const io = require("socket.io-client");
 const readline = require("readline");
-const forge = require("node-forge");
+const NodeRSA = require("node-rsa");
 
 const socket = io("http://localhost:3000");
 
@@ -10,14 +10,12 @@ const rl = readline.createInterface({
   prompt: "> ",
 });
 
-let username = "";
 let targetUsername = "";
+let username = "";
 const users = new Map();
-
-// Generate RSA key pair for this client
-const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048 });
-const publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
-const privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
+const keyPair = new NodeRSA({ b: 512 }); // Generate RSA key pair
+const publicKey = keyPair.exportKey("public");
+const privateKey = keyPair.exportKey("private");
 
 socket.on("connect", () => {
   console.log("Connected to the server");
@@ -26,11 +24,11 @@ socket.on("connect", () => {
     username = input;
     console.log(`Welcome, ${username} to the chat`);
 
-    // Register username and public key with the server
     socket.emit("registerPublicKey", {
       username,
-      publicKey: publicKeyPem,
+      publicKey,
     });
+
     rl.prompt();
 
     rl.on("line", (message) => {
@@ -42,18 +40,13 @@ socket.on("connect", () => {
           console.log(`No more secretly chatting with ${targetUsername}`);
           targetUsername = "";
         } else {
-          if (targetUsername) {
-            const recipientPublicKeyPem = users.get(targetUsername);
-            if (!recipientPublicKeyPem) {
-              console.log(`No public key found for ${targetUsername}`);
-            } else {
-              const recipientPublicKey = forge.pki.publicKeyFromPem(recipientPublicKeyPem);
-              const encryptedMessage = recipientPublicKey.encrypt(message, "RSA-OAEP");
-              socket.emit("message", { username, message: forge.util.encode64(encryptedMessage) });
-            }
-          } else {
-            socket.emit("message", { username, message });
+          let encryptedMessage = message;
+          if (targetUsername && users.has(targetUsername)) {
+            const targetPublicKey = users.get(targetUsername);
+            const targetRSA = new NodeRSA(targetPublicKey); //Create RSA
+            encryptedMessage = targetRSA.encrypt(message, "base64");
           }
+          socket.emit("message", { username, message: encryptedMessage });
         }
       }
       rl.prompt();
@@ -78,13 +71,10 @@ socket.on("message", (data) => {
   const { username: senderUsername, message: senderMessage } = data;
   if (senderUsername !== username) {
     try {
-      const decryptedMessage = keypair.privateKey.decrypt(
-        forge.util.decode64(senderMessage),
-        "RSA-OAEP"
-      );
-      console.log(`${senderUsername}: ${decryptedMessage}`);
-    } catch (error) {
-      console.log(`${senderUsername}: (encrypted message) ${senderMessage}`);
+      const decryptedMessage = keyPair.decrypt(senderMessage, "utf8"); //Decrypt
+      console.log(`${senderUsername} (decrypted): ${decryptedMessage}`);
+    } catch {
+      console.log(`${senderUsername}: ${senderMessage}`); // Display ciphertext if decryption fails
     }
     rl.prompt();
   }
